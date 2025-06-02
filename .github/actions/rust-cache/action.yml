@@ -1,0 +1,38 @@
+name: Setup Rust Caching
+
+inputs:
+  save-condition:
+    required: false
+    default: "${{ github.ref == 'refs/heads/master' }}"
+    type: string
+  cache-all-crates:
+    required: false
+    default: 'false'
+    type: string
+  workspaces:
+    required: false
+    default: '.'
+    type: string
+  use-sccache:
+    required: false
+    default: false
+    type: boolean
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: Swatinem/rust-cache@v2
+      with:
+        save-if: ${{ inputs.save-condition }}
+        workspaces: ${{ inputs.workspaces }}
+        cache-all-crates: ${{ inputs.cache-all-crates }}
+
+    - name: Install cargo-binstall
+      uses: cargo-bins/cargo-binstall@main
+
+    - name: Install cargo-llvm-cov
+      uses: taiki-e/install-action@cargo-llvm-cov
+
+    - name: Setup sccache
+      if: inputs.use-sccache
+      uses: Mozilla-Actions/sccache-action
