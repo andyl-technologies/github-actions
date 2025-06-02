@@ -1,0 +1,16 @@
+name: CI Skip Check
+description: 'Check if actions can be skipped using Graphite'
+
+outputs:
+  skip:
+    description: 'If CI jobs should be skipped or not'
+    value: ${{ steps.check_skip.outputs.skip }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Graphite CI Check
+      id: check_skip
+      uses: withgraphite/graphite-ci-action@main
+      with:
+        graphite_token: ${{ secrets.GH_GRAPHITE_CI_OPT }}
