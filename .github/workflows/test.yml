@@ -1,0 +1,79 @@
+name: 'Run Tests'
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'example/**'
+  push:
+    branches: [master]
+    paths:
+      - 'example/**'
+
+defaults:
+  run:
+    working-directory: ./example
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup devenv
+        uses: andyl-technologies/andyl-github-action/setup-devenv@master
+
+      - name: Setup Rust cache
+        uses: andyl-technologies/andyl-github-action/rust-cache@master
+
+      - name: Run tests
+        run: devenv test
+
+  coverage:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup devenv
+        uses: andyl-technologies/andyl-github-action/setup-devenv@master
+
+      - name: Setup Rust cache
+        uses: andyl-technologies/andyl-github-action/rust-cache@master
+
+      - name: Run coverage tests
+        run: devenv shell coverage-testing
+
+      # Only run the code coverage report comment for
+      # pull request-triggered workflows
+      - name: Generate coverage report
+        uses: clearlyip/code-coverage-report-action@v5
+        id: code_coverage_report_action
+        if:
+          ${{ github.actor != 'dependabot[bot]'}} && github.event_name ==
+          'pull_request' && (success() || failure())
+        with:
+          filename: 'coverage.cobertura.xml'
+          artifact_download_workflow_names: '"Run Tests"'
+
+      - name: Add coverage PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if:
+          steps.code_coverage_report_action.outputs.file != '' &&
+          github.event_name == 'pull_request' && (success() || failure())
+        with:
+          recreate: true
+          path: code-coverage-results.md
