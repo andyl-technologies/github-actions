@@ -1,4 +1,4 @@
-name: 'Run Tests'
+name: 'Example Workflow'
 
 on:
   workflow_dispatch:
@@ -67,7 +67,7 @@ jobs:
           'pull_request' && (success() || failure())
         with:
           filename: 'coverage.cobertura.xml'
-          artifact_download_workflow_names: '"Run Tests"'
+          artifact_download_workflow_names: '"Example Workflow"'
 
       - name: Add coverage PR comment
         uses: marocchino/sticky-pull-request-comment@v2
