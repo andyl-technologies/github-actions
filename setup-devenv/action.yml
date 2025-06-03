@@ -1,16 +1,20 @@
 name: Setup Devenv
+description: 'Sets up Devenv for Nix-based development environments'
 
 runs:
   using: 'composite'
   steps:
     - name: Install Nix
+      id: install_nix
       uses: cachix/install-nix-action@v31
 
     - name: Install Cachix
+      id: cachix
       uses: cachix/cachix-action@v16
       with:
         name: devenv
 
     - name: Install devenv
+      id: install_devenv
       shell: bash
       run: nix profile install nixpkgs#devenv

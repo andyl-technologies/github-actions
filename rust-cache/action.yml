@@ -1,38 +1,44 @@
 name: Setup Rust Caching
+description: 'Sets up caching for Rust projects'
 
 inputs:
   save-condition:
+    description: 'Condition in which the cache is saved'
     required: false
     default: "${{ github.ref == 'refs/heads/master' }}"
-    type: string
   cache-all-crates:
+    description: 'Whether to cache all crates or only the current workspace'
     required: false
     default: 'false'
-    type: string
   workspaces:
+    description: 'List of workspaces to cache, separated by commas'
     required: false
     default: '.'
-    type: string
   use-sccache:
+    description: 'Whether to use sccache for caching build artifacts'
     required: false
-    default: false
-    type: boolean
+    default: 'false'
 
 runs:
   using: 'composite'
   steps:
-    - uses: Swatinem/rust-cache@v2
+    - name: Rust cache
+      id: rust_cache
+      uses: Swatinem/rust-cache@v2
       with:
         save-if: ${{ inputs.save-condition }}
         workspaces: ${{ inputs.workspaces }}
         cache-all-crates: ${{ inputs.cache-all-crates }}
 
     - name: Install cargo-binstall
+      id: install_cargo_binstall
       uses: cargo-bins/cargo-binstall@main
 
     - name: Install cargo-llvm-cov
+      id: cargo_llvm_cov
       uses: taiki-e/install-action@cargo-llvm-cov
 
     - name: Setup sccache
+      id: sccache
       if: inputs.use-sccache
       uses: Mozilla-Actions/sccache-action@main
