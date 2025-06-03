@@ -1,7 +1,7 @@
 name: Setup Devenv
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Install Nix
       uses: cachix/install-nix-action@v31
@@ -12,4 +12,5 @@ runs:
         name: devenv
 
     - name: Install devenv
+      shell: bash
       run: nix profile install nixpkgs#devenv
