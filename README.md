@@ -1,4 +1,4 @@
-# andyl-github-action
+# ANDYL GitHub Actions
 
 Reusable GitHub Actions for ANDYL's projects.
 
@@ -19,7 +19,7 @@ Example usage:
 
 ```yaml
 - name: Setup devenv
-  uses: andyl-technologies/andyl-github-action/setup-devenv@master
+  uses: andyl-technologies/github-actions/setup-devenv@master
 ```
 
 No parameters are required.
@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: Check if CI can be skipped
         id: check-skip
-        uses: andyl-technologies/andyl-github-action/check-skip@master
+        uses: andyl-technologies/github-actions/check-skip@master
 ```
 
 GitHub does not have a way to arbitrarily exit a workflow without marking it as
@@ -54,7 +54,7 @@ using the `skip` output as a conditional on all subsequent actions using `needs`
 and `if`, like so:
 
 ```yaml
-- uses: andyl-technologies/andyl-github-action/check-skip@master
+- uses: andyl-technologies/github-actions/check-skip@master
   needs: check-skip
   if: ${{ needs.check-skip.outputs.skip }} == 'false'
 ```
@@ -72,7 +72,7 @@ Example usage:
 
 ```yaml
 - name: Setup Rust cache/dependencies
-  uses: andyl-technologies/andyl-github-action/setup-rust@master
+  uses: andyl-technologies/github-actions/setup-rust@master
   with:
     # Condition in which the cache is saved
     save-condition: ${{ github.ref == 'refs/heads/main' }}
