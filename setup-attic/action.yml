@@ -1,0 +1,31 @@
+name: Setup Attic cache
+description: Login to a self-hosted Attic cache
+
+inputs:
+  name:
+    description: Name to assign for cache
+    required: true
+  url:
+    description: URL of Attic cache to use
+    required: true
+  token:
+    description: Attic CI push/pull token
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Use Attic cache
+      shell: bash
+      run: |
+        nix profile install nixpkgs#attic-client
+        attic login ${{ inputs.name }} ${{ inputs.url }} ${{ inputs.token }}
+        attic use ${{ inputs.name }}
+
+        # attic has a memory leak that prevents us from automatically
+        # looking for store outputs without Kubernetes triggering an OOM,
+        # so let's not use that here.
+        # Instead, use the `push-to-attic` action bundled in this
+        # repository.
+        # https://github.com/zhaofengli/attic/issues/233
+        # attic watch-store &

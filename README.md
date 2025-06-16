@@ -94,3 +94,45 @@ jobs:
     SCCACHE_GHA_ENABLED: 'true'
     RUSTC_WRAPPER: 'sccache'
 ```
+
+### `setup-attic`
+
+Install and configure [`attic`](https://docs.attic.rs/), a self-hosted Nix
+binary cache.
+
+Requires Nix to be installed beforehand, preferably using
+[`nix-installer-action`](https://github.com/DeterminateSystems/nix-installer-action).
+
+Example usage:
+
+```yaml
+- name: Run Nix installer
+  uses: DeterminateSystems/nix-installer-action@main
+
+- name: Use Attic cache
+  uses: andyl-technologies/github-actions/push-to-attic@master
+  with:
+    - name: andyl
+    - url: https://attic.andyl.com
+    - token: ${{ secrets.ATTIC_TOKEN }}
+```
+
+### `push-to-attic`
+
+Given a list of space-separated store paths, push them, along with all their
+dependencies to an Attic cache that has been pre-configured with the
+`setup-attic` action.
+
+This action will be no longer needed once
+[this GitHub issue](https://github.com/zhaofengli/attic/issues/233) is solved
+and the store can be watched properly.
+
+Example usage:
+
+```yaml
+- name: Push to cache
+  uses: andyl-technologies/github-actions/push-to-attic@master
+  with:
+    cache: andyl
+    paths: ./result ./result-2
+```
