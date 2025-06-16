@@ -1,0 +1,26 @@
+name: Push to Attic
+description: Pushes build artifacts to Attic cache
+inputs:
+  cache:
+    description: Name of cache to push to
+    required: true
+  paths:
+    description: Space-separated list of paths (e.g. ./result ./another-result)
+    required: true
+  working-directory:
+    required: false
+    default: '.'
+    description: 'Directory in which to run attic'
+
+runs:
+  using: 'composite'
+  steps:
+    - shell: bash
+      run: |
+        cd "${{ inputs.working-directory }}" || exit 1
+        derivers=$(nix-store --query --deriver ${{ inputs.paths }} | tr '\n' ' ')
+
+        if [[ ! "$derivers" =~ "unknown-deriver" ]]; then
+          paths_to_cache=$(nix-store --query --include-outputs $derivers --requisites | grep -v '\.drv$$' | tr '\n' ' ')
+          attic push "${{ inputs.cache }}" $paths_to_cache
+        fi
