@@ -1,4 +1,4 @@
-name: 'Lint'
+name: "Lint"
 
 on:
   pull_request:
@@ -10,17 +10,20 @@ permissions:
 
 jobs:
   lint:
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v6
-      - name: actionlint
+      - name: actionlint repo itself
         uses: raven-actions/actionlint@v2
       - name: actionlint examples
         uses: raven-actions/actionlint@v2
         with:
           files: "examples/*.yml, examples/*.yaml"
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint Actions
+        run: yamllint -c ./.yamllint ./*-*
