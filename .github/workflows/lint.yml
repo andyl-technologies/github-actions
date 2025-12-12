@@ -10,7 +10,10 @@ permissions:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ci-enterprise-medium]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repo
