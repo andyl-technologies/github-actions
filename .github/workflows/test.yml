@@ -70,7 +70,7 @@ jobs:
           artifact_download_workflow_names: '"Example Workflow"'
 
       - name: Add coverage PR comment
-        uses: marocchino/sticky-pull-request-comment@v2
+        uses: marocchino/sticky-pull-request-comment@v3
         if:
           steps.code_coverage_report_action.outputs.file != '' &&
           github.event_name == 'pull_request' && (success() || failure())
